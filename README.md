@@ -22,25 +22,12 @@ This project leverages Playwright to create a robust test suite for Swag Labs. T
 
 2. **Installation**:
    ```bash
-   npm install
+   yarn install
    ```
 
 3. **Running Tests**:
    ```bash
-   npm test
-   ```
-   - To run tests in headless mode:
-     ```bash
-     npm run test:headless
-     ```
-   - To run tests in a specific browser (e.g., Chromium):
-     ```bash
-     npm run test:chromium
-     ```
-
-4. **Generating Test Report**:
-   ```bash
-   npm run test:report
+   yarn playwright test
    ```
 
 ## Test Scenarios
