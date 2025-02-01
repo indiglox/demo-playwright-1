@@ -1,75 +1,95 @@
-# Playwright Swag Labs Demo
+# Playwright Test Automation for Swag Labs
 
-This repository demonstrates the use of Playwright for end-to-end testing using Swag Labs, a sample e-commerce application. The project showcases various Playwright features and best practices for testing modern web applications.
+This repository demonstrates end-to-end (E2E) test automation using Playwright for the Swag Labs web application. It includes test cases for various user journeys, such as login, inventory management, cart operations, filtering, and checkout.
 
-## Purpose
+## Project Overview
 
-This repository serves as a demonstration of Playwright's capabilities for:
-- Cross-browser testing
-- End-to-end testing of e-commerce workflows
-- Parallel test execution
-- Test reporting
+This project leverages Playwright to create a robust test suite for Swag Labs. The tests are organized into multiple test files, each focusing on a specific feature or user flow. The project uses TypeScript for better code quality and maintainability.
+
+## Features
+
+- **Test Cases**: Covers critical user journeys, including login, inventory, cart, filtering, and checkout.
+- **Page Object Model (POM)**: Implements a clean architecture using the Page Object Model for better code organization.
+- **Fixtures and Data-Driven Testing**: Utilizes Playwright fixtures and external data files for parameterized testing.
+- **Tagging and Prioritization**: Tests are tagged with priorities (e.g., `@P0`, `@P1`) and categories (e.g., `@smoke`, `@regression`, `@E2E`).
 
 ## Getting Started
 
-### Prerequisites
-- Node.js (LTS version recommended)
-- npm or yarn
+1. **Prerequisites**:
+   - Node.js (LTS version or higher)
+   - npm or yarn
+   - Playwright installed globally or as a dev dependency
 
-### Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/playwright-swaglabs-demo.git
-   ```
-2. Install dependencies:
+2. **Installation**:
    ```bash
    npm install
    ```
 
-### Running Tests
+3. **Running Tests**:
+   ```bash
+   npm test
+   ```
+   - To run tests in headless mode:
+     ```bash
+     npm run test:headless
+     ```
+   - To run tests in a specific browser (e.g., Chromium):
+     ```bash
+     npm run test:chromium
+     ```
 
-The tests can be executed using the following commands:
+4. **Generating Test Report**:
+   ```bash
+   npm run test:report
+   ```
 
-```bash
-npx playwright test
-```
+## Test Scenarios
 
-To run tests in a specific browser:
-```bash
-npx playwright test --browser=chromium
-```
+The test suite is divided into multiple files, each focusing on a specific feature or user flow.
 
-To run tests in headless mode:
-```bash
-npx playwright test --browser=chromium --headless
-```
+### 1. **Login Scenarios (`login.spec.ts`)**
 
-## Features
+- **Test Case 1**: Successful login with valid credentials.
+  - Verify that the user is redirected to the products page after logging in with valid credentials.
+- **Test Case 2**: Login with invalid credentials.
+  - Verify that an error message is displayed when invalid credentials are used.
 
-### Test Configuration
-- **Multi-browser support**: Tests are configured to run on Chromium, Firefox, and WebKit
-- **Desktop viewports**: Uses standard desktop browser configurations
-- **Parallel execution**: Tests run in parallel for faster execution
-- **Retries on CI**: Configured to retry failed tests on CI environments
+### 2. **Inventory Management (`inventory.spec.ts`)**
 
-### Test Cases
+- **Test Case 1**: Add a product to the cart.
+  - Verify that a product can be successfully added to the cart.
+- **Test Case 2**: Remove a product from the cart.
+  - Verify that a product is removed from the cart when the remove button is clicked.
 
-#### Example Tests
-- `example.spec.ts`: Demonstrates basic Playwright functionality
-  - Tests page title
-  - Tests navigation through link clicks
+### 3. **Cart Operations (`cart.spec.ts`)**
 
-#### Checkout Flow
-- `checkout.spec.ts`: Tests the complete checkout flow
-  - Adding products to cart
-  - Navigating to checkout
-  - Filling customer information
-  - Verifying checkout overview
-  - Completing the purchase
+- **Test Case 1**: Remove a product from the cart.
+  - Verify that a product is removed from the cart.
+- **Test Case 2**: Return to the product page.
+  - Verify that the user can navigate back to the products page from the cart.
+- **Test Case 3**: Checkout.
+  - Verify that the user can proceed to checkout from the cart.
 
-### Reporting
-- Uses Playwright's built-in `list` reporter for test results
-- Generates HTML reports for detailed test analysis
+### 4. **Checkout Process (`checkout.spec.ts`)**
 
-## Project Structure
+- **Test Case 1**: End-to-end checkout flow.
+  - Verify that the user can complete the checkout process, including:
+    - Adding products to the cart.
+    - Navigating to the cart.
+    - Proceeding to checkout.
+    - Filling in personal information.
+    - Verifying the checkout overview.
+    - Completing the checkout and returning to the products page.
+
+### 5. **Filtering Products (`filter.spec.ts`)**
+
+- **Test Case 1**: Filter products by name (ascending and descending).
+  - Verify that products can be filtered by name in both ascending and descending order.
+- **Test Case 2**: Filter products by price (ascending and descending).
+  - Verify that products can be filtered by price in both ascending and descending order.
+
+## Contributions
+
+Contributions are welcome! If you have suggestions, improvements, or bug reports, feel free to open an issue or submit a pull request.
+
+---
