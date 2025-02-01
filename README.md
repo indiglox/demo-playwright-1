@@ -1,10 +1,10 @@
-# Playwright Test Automation for Swag Labs
+# Playwright Test Automation for [Swag Labs: Sauce Demo](https://www.saucedemo.com/)
 
-This repository demonstrates end-to-end (E2E) test automation using Playwright for the Swag Labs web application. It includes test cases for various user journeys, such as login, inventory management, cart operations, filtering, and checkout.
+This repository demonstrates end-to-end (E2E) test automation using Playwright for the [Swag Labs: Sauce Demo](https://www.saucedemo.com/) web application. It includes test cases for various user journeys, such as login, inventory management, cart operations, filtering, and checkout.
 
 ## Project Overview
 
-This project leverages Playwright to create a robust test suite for Swag Labs. The tests are organized into multiple test files, each focusing on a specific feature or user flow. The project uses TypeScript for better code quality and maintainability.
+This project leverages Playwright to create a robust test suite for [Swag Labs: Sauce Demo](https://www.saucedemo.com/). The tests are organized into multiple test files, each focusing on a specific feature or user flow. The project uses TypeScript for better code quality and maintainability.
 
 ## Features
 
@@ -12,6 +12,7 @@ This project leverages Playwright to create a robust test suite for Swag Labs. T
 - **Page Object Model (POM)**: Implements a clean architecture using the Page Object Model for better code organization.
 - **Fixtures and Data-Driven Testing**: Utilizes Playwright fixtures and external data files for parameterized testing.
 - **Tagging and Prioritization**: Tests are tagged with priorities (e.g., `@P0`, `@P1`) and categories (e.g., `@smoke`, `@regression`, `@E2E`).
+- **CI/CD Pipeline**: GitHub Actions integration for automated testing.
 
 ## Getting Started
 
