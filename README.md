@@ -28,7 +28,7 @@ This project leverages Playwright to create a robust test suite for [Swag Labs: 
 
 3. **Running Tests**:
    ```bash
-   yarn playwright test
+   yarn test
    ```
 
 ## Test Scenarios
