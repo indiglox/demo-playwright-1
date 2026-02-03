@@ -118,5 +118,6 @@ npx playwright test -g "Performance"
 ```
 
 #### Video Walkthrough
+[Watch the Video Walkthrough](https://jam.dev/c/7390d06b-11c5-4520-a5fa-9c1ebf7c2c69) _(This video explains the
+reverse-engineering of the session cookie and demonstrates the full test suite)._
 
-(See attached video/walkthrough artifact explaining the reverse-engineering of the session cookie).
