@@ -1,18 +1,20 @@
-### Overview
+## Assessment Task: Senior QA Automation Engineer - "Project SpeedLabs"
+
+#### Overview
 
 This repository contains the solution for the "Project SpeedLabs" assessment, implementing a high-performance, robust
 test suite for the SauceDemo e-commerce platform using **Playwright with TypeScript**.
 
-### Part 1: Test Strategy & Architecture
+#### Part 1: Test Strategy & Architecture
 
-#### Framework Choice: Playwright + TypeScript
+##### Framework Choice: Playwright + TypeScript
 
 - **Speed**: Single WebSocket connection for fast execution and low flakiness compared to HTTP-based protocols
   (Selenium).
 - **Modern Web**: Native support for auto-waiting, network interception, and mobile emulation.
 - **Type Safety**: TypeScript ensures code quality and maintainability in larger suites.
 
-#### Hybrid Auth Strategy (Risk vs. Reward)
+##### Hybrid Auth Strategy (Risk vs. Reward)
 
 We bypass the UI for the login step (Setup) but test it via the UI in critical paths (Smoke).
 
@@ -21,7 +23,7 @@ We bypass the UI for the login step (Setup) but test it via the UI in critical p
 - **Mitigation**: We use a `global.setup.ts` to perform _one_ real UI login per run, ensuring the tokens we inject are
   fresh and valid.
 
-#### Test Plan (Checkout Flow)
+##### Test Plan (Checkout Flow)
 
 1.  **Pre-condition**: User is logged in programmatically (Inventory Page).
 2.  **Action**: Add "Sauce Labs Backpack" to cart.
@@ -31,11 +33,11 @@ We bypass the UI for the login step (Setup) but test it via the UI in critical p
 6.  **Action**: Finish.
 7.  **Assertion**: Verify "Thank you for your order" message.
 
-### Part 2: The Framework & The Curveball (Programmatic Login)
+#### Part 2: The Framework & The Curveball (Programmatic Login)
 
 **Constraint**: "Do NOT use the UI to log in for your main tests."
 
-#### Implementation
+##### Implementation
 
 We utilize Playwright's **Global Setup** pattern to solve the "Anti-Cheat" requirement robustly.
 
@@ -57,9 +59,9 @@ We utilize Playwright's **Global Setup** pattern to solve the "Anti-Cheat" requi
 **Robust Selectors**: All locators use `data-test` attributes (e.g., `[data-test="add-to-cart-sauce-labs-backpack"]`) to
 ensure resilience against CSS/layout changes.
 
-### Part 3: UX/UI & Visual Validation
+#### Part 3: UX/UI & Visual Validation
 
-#### Visual Logic Check
+##### Visual Logic Check
 
 - **Test**: `tests/specs/assessment.spec.ts` -> "Visual: Add to Cart button changes color"
 - **Logic**:
@@ -69,13 +71,13 @@ ensure resilience against CSS/layout changes.
   4.  Asserts button text changes to "REMOVE".
   5.  Asserts button CSS color changes to Red (`rgb(226, 35, 26)`).
 
-#### Responsiveness
+##### Responsiveness
 
 - **Mobile Viewport**: The `playwright.config.ts` includes a "Mobile Chrome" project (Pixel 5 emulation).
 - **Execution**: The Checkout Flow works seamlessly on mobile dimensions without code changes due to robust layout
   handling.
 
-### Part 4: The Senior "X-Factor" (Performance)
+#### Part 4: The Senior "X-Factor" (Performance)
 
 We implemented a performance guardrail to ensure the application remains snappy.
 
@@ -84,16 +86,16 @@ We implemented a performance guardrail to ensure the application remains snappy.
   `loadEventEnd - startTime`.
 - **Threshold**: Fails if load time > 2000ms.
 
-### Instructions
+#### Instructions
 
-#### Installation
+##### Installation
 
 ```bash
 npm install
 npx playwright install
 ```
 
-#### Running Tests
+##### Running Tests
 
 Run all tests (Chromium):
 
@@ -115,6 +117,6 @@ npx playwright test -g "Visual"
 npx playwright test -g "Performance"
 ```
 
-### Video Walkthrough
+#### Video Walkthrough
 
 (See attached video/walkthrough artifact explaining the reverse-engineering of the session cookie).
