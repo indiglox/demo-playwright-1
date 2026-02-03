@@ -7,13 +7,24 @@ export class InventoryPage {
   readonly addToCartButton: Locator;
   readonly removeButton: Locator;
   readonly cartButton: Locator;
+  readonly inventoryItem: Locator;
 
   constructor(page: Page) {
     this.page = page;
-    this.cartButton = page.locator('.shopping_cart_link');
+    this.cartButton = page.locator('[data-test="shopping-cart-link"]');
     this.filterButton = page.locator('[data-test="product-sort-container"]');
-    this.addToCartButton = page.locator('[data-test="add-to-cart-button"]');
-    this.removeButton = page.locator('[data-test="remove-button"]');
+    this.addToCartButton = page.locator('[data-test="add-to-cart"]');
+    this.removeButton = page.locator('[data-test="remove"]');
+    this.inventoryItem = page.locator('[data-test="inventory-item"]');
+  }
+
+  private getProductItem(productName: string) {
+    return this.inventoryItem.filter({ hasText: productName });
+  }
+
+  async viewProductDetails(productName: string) {
+    const item = this.getProductItem(productName);
+    await item.locator('[data-test="inventory-item-name"]').click();
   }
 
   /**
@@ -22,12 +33,10 @@ export class InventoryPage {
    */
   async addToCart(productName: string) {
     // Get current cart item count
-    let cartItemCount: number = parseInt(
-      (await this.page.locator('.shopping_cart_container').innerText()) || '0'
-    );
+    let cartItemCount: number = parseInt((await this.cartButton.innerText()) || '0');
 
     // Find the product card with matching name
-    const item = this.page.locator(`.inventory_item:has-text("${productName}")`);
+    const item = this.getProductItem(productName);
 
     // Click the "Add to cart" button and increment cart count
     await item
@@ -38,9 +47,7 @@ export class InventoryPage {
       });
 
     // Verify cart count has increased
-    await expect(this.page.locator('.shopping_cart_container')).toHaveText(
-      cartItemCount.toString()
-    );
+    await expect(this.cartButton).toHaveText(cartItemCount.toString());
   }
 
   /**
@@ -48,12 +55,12 @@ export class InventoryPage {
    * @param productName
    */
   async assertProductIsAddedToCart(productName: string) {
-    const item = this.page.locator(`.inventory_item:has-text("${productName}")`);
+    const item = this.getProductItem(productName);
     await expect(item.filter({ hasText: 'remove' })).toBeVisible();
   }
 
   async assertProductIsRemovedFromCart(productName: string) {
-    const item = this.page.locator(`.inventory_item:has-text("${productName}")`);
+    const item = this.getProductItem(productName);
     await expect(item.filter({ hasText: 'Add to cart' })).toBeVisible();
   }
 
@@ -63,12 +70,10 @@ export class InventoryPage {
    */
   async removeFromCart(productName: string) {
     // Get current cart item count
-    let cartItemCount: number = parseInt(
-      (await this.page.locator('.shopping_cart_container').innerText()) || '0'
-    );
+    let cartItemCount: number = parseInt((await this.cartButton.innerText()) || '0');
 
     // Find the product card with matching name
-    const item = this.page.locator(`.inventory_item:has-text("${productName}")`);
+    const item = this.getProductItem(productName);
 
     // Click the "Remove" button and decrement cart count
     await item
@@ -80,11 +85,9 @@ export class InventoryPage {
 
     // Verify cart count has decreased
     if (cartItemCount === 0) {
-      await expect(this.page.locator('.shopping_cart_badge')).toBeHidden();
+      await expect(this.cartButton.filter({ hasText: cartItemCount.toString() })).toBeHidden();
     } else {
-      await expect(this.page.locator('.shopping_cart_container')).toHaveText(
-        cartItemCount.toString()
-      );
+      await expect(this.cartButton).toHaveText(cartItemCount.toString());
     }
   }
 
@@ -106,7 +109,7 @@ export class InventoryPage {
     let data: string[] = [];
 
     // Get all inventory items
-    const items = await this.page.locator('.inventory_item').all();
+    const items = await this.inventoryItem.all();
 
     // Collect requested data from each item
     for (const item of items) {
@@ -134,13 +137,13 @@ export class InventoryPage {
     if (filter === 'az') {
       for (let i = 0; i < count; i++) {
         const productName = filteredProductData[i];
-        await expect(this.page.locator('.inventory_item').nth(i)).toContainText(productName);
+        await expect(this.inventoryItem.nth(i)).toContainText(productName);
       }
     }
     if (filter === 'za') {
       for (let i = count - 1; i >= 0; i--) {
         const productName = filteredProductData[i];
-        await expect(this.page.locator('.inventory_item').nth(i)).toContainText(productName);
+        await expect(this.inventoryItem.nth(i)).toContainText(productName);
       }
     }
   }
@@ -158,13 +161,13 @@ export class InventoryPage {
     if (filter === 'lohi') {
       for (let i = 0; i < count; i++) {
         const price = parseFloat(filteredProductData[i].split('$')[1]);
-        await expect(this.page.locator('.inventory_item').nth(i)).toContainText(price.toString());
+        await expect(this.inventoryItem.nth(i)).toContainText(price.toString());
       }
     }
     if (filter === 'hilo') {
       for (let i = count - 1; i >= 0; i--) {
         const price = parseFloat(filteredProductData[i].split('$')[1]);
-        await expect(this.page.locator('.inventory_item').nth(i)).toContainText(price.toString());
+        await expect(this.inventoryItem.nth(i)).toContainText(price.toString());
       }
     }
   }

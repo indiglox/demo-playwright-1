@@ -4,34 +4,30 @@ import { expect } from '@playwright/test';
 test(
   'Should be able to remove a product from the cart',
   { tag: ['@regression', '@P1'] },
-  async ({ login, inventory, cart }) => {
-    await inventory.addToCart('Sauce Labs Backpack');
-    await inventory.addToCart('Sauce Labs Bike Light');
-    await inventory.cartButton.click();
-    await cart.removeItem('Sauce Labs Backpack');
-    await cart.assertItemIsRemoved('Sauce Labs Backpack');
+  async ({ authInventory, authCart }) => {
+    await authInventory.addToCart('Sauce Labs Backpack');
+    await authInventory.addToCart('Sauce Labs Bike Light');
+    await authInventory.cartButton.click();
+    await authCart.removeItem('Sauce Labs Backpack');
+    await authCart.assertItemIsRemoved('Sauce Labs Backpack');
   }
 );
 
 test(
   'Should be able to return to product page',
   { tag: ['@regression', '@P1'] },
-  async ({ login, inventory, cart }) => {
-    await inventory.addToCart('Sauce Labs Backpack');
-    await inventory.cartButton.click();
-    await cart.continueShopping();
+  async ({ authInventory, authCart }) => {
+    await authInventory.addToCart('Sauce Labs Backpack');
+    await authInventory.cartButton.click();
+    await authCart.continueShopping();
     // Verify that the product page is displayed by asserting the presence of the filter button
-    await expect(inventory.filterButton).toBeVisible();
+    await expect(authInventory.filterButton).toBeVisible();
   }
 );
 
-test(
-  'Should be able to checkout',
-  { tag: ['@smoke', '@P0'] },
-  async ({ login, cart, inventory }) => {
-    await inventory.addToCart('Sauce Labs Backpack');
-    await inventory.addToCart('Sauce Labs Bike Light');
-    await inventory.cartButton.click();
-    await cart.checkout();
-  }
-);
+test('Should be able to checkout', { tag: ['@smoke', '@P0'] }, async ({ authInventory, authCart }) => {
+  await authInventory.addToCart('Sauce Labs Backpack');
+  await authInventory.addToCart('Sauce Labs Bike Light');
+  await authInventory.cartButton.click();
+  await authCart.checkout();
+});

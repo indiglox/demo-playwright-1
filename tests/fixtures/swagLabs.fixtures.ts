@@ -1,51 +1,70 @@
-import { test as base } from '@playwright/test';
+import { test as base, Page, expect } from '@playwright/test';
 import { LoginPage, CartPage, InventoryPage, CheckoutPage } from '../pages/';
 import { type CustomerInfo, customerInfo, type ProductData, productData } from '../data/test.data';
 
 type SwagLabs = {
+  authenticated: Page;
   login: LoginPage;
   customerInfo: CustomerInfo;
-  cart: CartPage;
-  inventory: InventoryPage;
-  checkout: CheckoutPage;
   productData: ProductData[];
+  // Regular page objects
+  inventory: InventoryPage;
+  cart: CartPage;
+  checkout: CheckoutPage;
+  // Authenticated page objects
+  authInventory: InventoryPage;
+  authCart: CartPage;
+  authCheckout: CheckoutPage;
 };
 
 const swagLabs = base.extend<SwagLabs>({
+  authenticated: async ({ browser }, use) => {
+    const context = await browser.newContext({
+      storageState: 'tests/.auth/user.json',
+    });
+    const page = await context.newPage();
+    await page.goto('https://www.saucedemo.com/inventory.html');
+    await use(page);
+    await context.close();
+  },
+
+  // Regular page objects
   login: async ({ page }, use) => {
-    // Create a new instance of the login page
-    const loginPage = new LoginPage(page);
-    // Navigate to the login page and perform login
-    await loginPage.login('standard_user', 'secret_sauce');
-    // Provide the login page instance to tests
-    use(loginPage);
+    await use(new LoginPage(page));
   },
 
   inventory: async ({ page }, use) => {
-    const inventoryPage = new InventoryPage(page);
-    use(inventoryPage);
-  },
-
-  checkout: async ({ page }, use) => {
-    const checkoutPage = new CheckoutPage(page);
-    use(checkoutPage);
+    await use(new InventoryPage(page));
   },
 
   cart: async ({ page }, use) => {
-    const cartPage = new CartPage(page);
-    use(cartPage);
+    await use(new CartPage(page));
+  },
+
+  checkout: async ({ page }, use) => {
+    await use(new CheckoutPage(page));
+  },
+
+  // Authenticated page objects
+  authInventory: async ({ authenticated }, use) => {
+    await use(new InventoryPage(authenticated));
+  },
+
+  authCart: async ({ authenticated }, use) => {
+    await use(new CartPage(authenticated));
+  },
+
+  authCheckout: async ({ authenticated }, use) => {
+    await use(new CheckoutPage(authenticated));
   },
 
   productData: async ({}, use) => {
-    // Fetch static product data from the test.data.ts file
-    const data: ProductData[] = productData;
-    use(data);
+    await use(productData);
   },
+
   customerInfo: async ({}, use) => {
-    // Generate customer info data using Faker.js
-    const data = customerInfo();
-    use(data);
+    await use(customerInfo());
   },
 });
 
-export { swagLabs };
+export { swagLabs, expect };
