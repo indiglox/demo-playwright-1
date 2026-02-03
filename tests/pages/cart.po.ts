@@ -6,15 +6,19 @@ export class CartPage {
   readonly checkoutButton: Locator;
   readonly cartItemCount: Locator;
   readonly continueShoppingButton: Locator;
+  readonly inventoryItem: Locator;
+  readonly title: Locator;
 
   constructor(page: Page) {
     this.page = page;
-    this.cartItemCount = page.locator('.shopping_cart_badge');
+    this.title = page.locator('[data-test="title"]');
+    this.cartItemCount = page.locator('[data-test="shopping-cart-badge"]');
     this.removeButton = page.getByRole('button', { name: 'Remove' });
     this.checkoutButton = page.getByRole('button', { name: 'Checkout' });
     this.continueShoppingButton = page.getByRole('button', {
       name: 'Continue shopping',
     });
+    this.inventoryItem = page.locator('[data-test="inventory-item"]');
   }
 
   /**
@@ -24,7 +28,7 @@ export class CartPage {
   async removeItem(productName: string) {
     // Get current cart item count
     let cartItemCount: number = parseInt((await this.cartItemCount.innerText()) || '0');
-    const item = this.page.locator(`.cart_item:has-text("${productName}")`);
+    const item = this.inventoryItem.filter({ hasText: productName });
 
     // Click the "Remove" button and decrement cart count
     await item
@@ -43,7 +47,7 @@ export class CartPage {
    * @param productName - Name of the product to check
    */
   async assertItemIsRemoved(productName: string) {
-    await expect(this.page.locator(`.cart_item:has-text("${productName}")`)).toBeHidden();
+    await expect(this.inventoryItem.filter({ hasText: productName })).toBeHidden();
   }
 
   /**
@@ -51,9 +55,7 @@ export class CartPage {
    */
   async checkout() {
     await this.checkoutButton.click();
-    await expect(
-      this.page.locator('[data-test="title"]:has-text("Checkout: Your Information")')
-    ).toBeVisible();
+    await expect(this.title).toContainText('Checkout: Your Information');
   }
 
   /**
@@ -61,6 +63,6 @@ export class CartPage {
    */
   async continueShopping() {
     await this.continueShoppingButton.click();
-    await expect(this.page.locator('[data-test="title"]:has-text("Product")')).toBeVisible();
+    await expect(this.title).toContainText('Product');
   }
 }

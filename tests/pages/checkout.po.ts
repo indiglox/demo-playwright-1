@@ -59,14 +59,14 @@ export class CheckoutPage {
     const totalPrice = itemTotal + taxAmount;
 
     for (const product of data) {
-      const cartItem = this.page.locator(`.cart_item:has-text("${product.name}")`);
+      const cartItem = this.page.locator(`[data-test="inventory-item"]:has-text("${product.name}")`);
       await expect(cartItem).toContainText(product.name);
       await expect(cartItem).toContainText(product.price.toString());
     }
 
-    await expect(this.page.locator('.summary_subtotal_label')).toContainText(itemTotal.toString());
-    await expect(this.page.locator('.summary_tax_label')).toContainText(taxAmount.toString());
-    await expect(this.page.locator('.summary_total_label')).toContainText(totalPrice.toString());
+    await expect(this.page.locator('[data-test="subtotal-label"]')).toContainText(itemTotal.toString());
+    await expect(this.page.locator('[data-test="tax-label"]')).toContainText(taxAmount.toString());
+    await expect(this.page.locator('[data-test="total-label"]')).toContainText(totalPrice.toString());
   }
 
   /**

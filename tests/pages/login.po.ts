@@ -8,6 +8,7 @@ export class LoginPage {
   private readonly loginButton: Locator;
   private readonly usernameInput: Locator;
   private readonly passwordInput: Locator;
+  readonly loginError: Locator;
 
   /**
    * Initializes the LoginPage instance
@@ -18,6 +19,7 @@ export class LoginPage {
     this.loginButton = page.getByRole('button', { name: 'Login' });
     this.usernameInput = page.getByPlaceholder('Username');
     this.passwordInput = page.getByPlaceholder('Password');
+    this.loginError = page.locator('[data-test="error"]');
   }
 
   /**
@@ -50,7 +52,7 @@ export class LoginPage {
       await this.submitForm(username, password);
       await expect(this.page.locator('[data-test="title"]:has-text("Products")')).toBeVisible();
     } catch (error) {
-      throw new Error(`Login failed: ${error.message}`);
+      throw new Error(`Login failed: ${error}`);
     }
   }
 }

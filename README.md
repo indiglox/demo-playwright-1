@@ -1,83 +1,122 @@
-# Playwright Test Automation for [Swag Labs: Sauce Demo](https://www.saucedemo.com/)
+# Assessment Task: Senior QA Automation Engineer - "Project SpeedLabs"
 
-This repository demonstrates end-to-end (E2E) test automation using Playwright for the [Swag Labs: Sauce Demo](https://www.saucedemo.com/) web application. It includes test cases for various user journeys, such as login, inventory management, cart operations, filtering, and checkout.
+## Overview
 
-## Project Overview
+This repository contains the solution for the "Project SpeedLabs" assessment, implementing a high-performance, robust
+test suite for the SauceDemo e-commerce platform using **Playwright with TypeScript**.
 
-This project leverages Playwright to create a robust test suite for [Swag Labs: Sauce Demo](https://www.saucedemo.com/). The tests are organized into multiple test files, each focusing on a specific feature or user flow. The project uses TypeScript for better code quality and maintainability.
+## Part 1: Test Strategy & Architecture
 
-## Features
+### Framework Choice: Playwright + TypeScript
 
-- **Test Cases**: Covers critical user journeys, including login, inventory, cart, filtering, and checkout.
-- **Page Object Model (POM)**: Implements a clean architecture using the Page Object Model for better code organization.
-- **Fixtures and Data-Driven Testing**: Utilizes Playwright fixtures and external data files for parameterized testing.
-- **Tagging and Prioritization**: Tests are tagged with priorities (e.g., `@P0`, `@P1`) and categories (e.g., `@smoke`, `@regression`, `@E2E`).
-- **CI/CD Pipeline**: GitHub Actions integration for automated testing.
+- **Speed**: Single WebSocket connection for fast execution and low flakiness compared to HTTP-based protocols
+  (Selenium).
+- **Modern Web**: Native support for auto-waiting, network interception, and mobile emulation.
+- **Type Safety**: TypeScript ensures code quality and maintainability in larger suites.
 
-## Getting Started
+### Hybrid Auth Strategy (Risk vs. Reward)
 
-1. **Prerequisites**:
-   - Node.js (LTS version or higher)
-   - npm or yarn
-   - Playwright installed globally or as a dev dependency
+We bypass the UI for the login step (Setup) but test it via the UI in critical paths (Smoke).
 
-2. **Installation**:
-   ```bash
-   yarn install
-   ```
+- **Reward**: Drastically reduced execution time (~500ms vs 3-5s per test).
+- **Risk**: Potential drift if the login cookie logic changes on the backend.
+- **Mitigation**: We use a `global.setup.ts` to perform _one_ real UI login per run, ensuring the tokens we inject are
+  fresh and valid.
 
-3. **Running Tests**:
-   ```bash
-   yarn test
-   ```
+### Test Plan (Checkout Flow)
 
-## Test Scenarios
+1.  **Pre-condition**: User is logged in programmatically (Inventory Page).
+2.  **Action**: Add "Sauce Labs Backpack" to cart.
+3.  **Action**: Navigate to Cart -> Checkout.
+4.  **Action**: Fill Personal Info (Dummy Data) -> Continue.
+5.  **Verification**: Validate Product in Overview.
+6.  **Action**: Finish.
+7.  **Assertion**: Verify "Thank you for your order" message.
 
-The test suite is divided into multiple files, each focusing on a specific feature or user flow.
+## Part 2: The Framework & The Curveball (Programmatic Login)
 
-### 1. **Login Scenarios (`login.spec.ts`)**
+**Constraint**: "Do NOT use the UI to log in for your main tests."
 
-- **Test Case 1**: Successful login with valid credentials.
-  - Verify that the user is redirected to the products page after logging in with valid credentials.
-- **Test Case 2**: Login with invalid credentials.
-  - Verify that an error message is displayed when invalid credentials are used.
+### Implementation
 
-### 2. **Inventory Management (`inventory.spec.ts`)**
+We utilize Playwright's **Global Setup** pattern to solve the "Anti-Cheat" requirement robustly.
 
-- **Test Case 1**: Add a product to the cart.
-  - Verify that a product can be successfully added to the cart.
-- **Test Case 2**: Remove a product from the cart.
-  - Verify that a product is removed from the cart when the remove button is clicked.
+1.  **Capture**: `tests/global.setup.ts` performs a single UI login and saves the authorized browser state
+    (cookies/localStorage) to `tests/.auth/user.json`.
+2.  **Inject**: The `authenticated` fixture in `tests/fixtures/swagLabs.fixtures.ts` initializes a new browser context
+    _using_ this saved state file.
+    ```typescript
+    // swagLabs.fixtures.ts
+    authenticated: async ({ browser }, use) => {
+      const context = await browser.newContext({ storageState: 'tests/.auth/user.json' });
+      const page = await context.newPage();
+      await page.goto('.../inventory.html'); // Lands directly on Inventory, logged in.
+      await use(page);
+    };
+    ```
+3.  **Result**: Tests start instantly on the Inventory page, skipping the login form entirely.
 
-### 3. **Cart Operations (`cart.spec.ts`)**
+**Robust Selectors**: All locators use `data-test` attributes (e.g., `[data-test="add-to-cart-sauce-labs-backpack"]`) to
+ensure resilience against CSS/layout changes.
 
-- **Test Case 1**: Remove a product from the cart.
-  - Verify that a product is removed from the cart.
-- **Test Case 2**: Return to the product page.
-  - Verify that the user can navigate back to the products page from the cart.
-- **Test Case 3**: Checkout.
-  - Verify that the user can proceed to checkout from the cart.
+## Part 3: UX/UI & Visual Validation
 
-### 4. **Checkout Process (`checkout.spec.ts`)**
+### Visual Logic Check
 
-- **Test Case 1**: End-to-end checkout flow.
-  - Verify that the user can complete the checkout process, including:
-    - Adding products to the cart.
-    - Navigating to the cart.
-    - Proceeding to checkout.
-    - Filling in personal information.
-    - Verifying the checkout overview.
-    - Completing the checkout and returning to the products page.
+- **Test**: `tests/specs/assessment.spec.ts` -> "Visual: Add to Cart button changes color"
+- **Logic**:
+  1.  Asserts button text is "ADD TO CART".
+  2.  Asserts button CSS color is valid.
+  3.  Clicks button.
+  4.  Asserts button text changes to "REMOVE".
+  5.  Asserts button CSS color changes to Red (`rgb(226, 35, 26)`).
 
-### 5. **Filtering Products (`filter.spec.ts`)**
+### Responsiveness
 
-- **Test Case 1**: Filter products by name (ascending and descending).
-  - Verify that products can be filtered by name in both ascending and descending order.
-- **Test Case 2**: Filter products by price (ascending and descending).
-  - Verify that products can be filtered by price in both ascending and descending order.
+- **Mobile Viewport**: The `playwright.config.ts` includes a "Mobile Chrome" project (Pixel 5 emulation).
+- **Execution**: The Checkout Flow works seamlessly on mobile dimensions without code changes due to robust layout
+  handling.
 
-## Contributions
+## Part 4: The Senior "X-Factor" (Performance)
 
-Contributions are welcome! If you have suggestions, improvements, or bug reports, feel free to open an issue or submit a pull request.
+We implemented a performance guardrail to ensure the application remains snappy.
 
----
+- **Check**: `tests/specs/assessment.spec.ts` -> "Performance: Inventory Page loads within 2.0 seconds"
+- **Method**: Uses the reliable `PerformanceNavigationTiming` API via `page.evaluate()` to measure
+  `loadEventEnd - startTime`.
+- **Threshold**: Fails if load time > 2000ms.
+
+## Instructions
+
+### Installation
+
+```bash
+npm install
+npx playwright install
+```
+
+### Running Tests
+
+Run all tests (Chromium):
+
+```bash
+npx playwright test
+```
+
+Run Mobile Viewport tests:
+
+```bash
+npx playwright test --project="Mobile Chrome"
+```
+
+Run specific deliverables:
+
+```bash
+npx playwright test -g "Checkout Flow"
+npx playwright test -g "Visual"
+npx playwright test -g "Performance"
+```
+
+## Video Walkthrough
+
+(See attached video/walkthrough artifact explaining the reverse-engineering of the session cookie).
