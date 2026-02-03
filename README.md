@@ -86,6 +86,20 @@ We implemented a performance guardrail to ensure the application remains snappy.
   `loadEventEnd - startTime`.
 - **Threshold**: Fails if load time > 2000ms.
 
+#### Part 5: Continuous Integration (CI/CD)
+
+We have implemented a Continuous Integration pipeline using **GitHub Actions** to ensure test stability and code quality
+on every change.
+
+- **Workflow**: `.github/workflows/main.yml`
+- **Triggers**: Runs on every `push` and `pull_request` to `main` or `master` branches.
+- **Process**:
+  1.  Sets up an Ubuntu runner with Node.js LTS.
+  2.  Installs project dependencies.
+  3.  Installs Playwright browsers.
+  4.  Runs the full test suite (`npx playwright test`).
+  5.  Uploads the Playwright Report as an artifact (available for 30 days) for debugging failures.
+
 #### Instructions
 
 ##### Installation
